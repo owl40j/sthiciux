@@ -37,6 +37,42 @@
   transform: translateX(-50%);
 }
 
+.gatePanels {
+  position: absolute;
+  inset: 6px;
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.gatePanels span {
+  width: calc(50% - 3px);
+  height: 100%;
+  border: 1px dashed var(--color-border-light);
+  background: rgba(224, 224, 224, 0.45);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+}
+
+.gatePanels span:first-child {
+  border-radius: 999px 0 0 999px;
+}
+
+.gatePanels span:last-child {
+  border-radius: 0 999px 999px 0;
+}
+
+.gatePanels--open span:first-child {
+  transform: translateX(-115%);
+  opacity: 0;
+}
+
+.gatePanels--open span:last-child {
+  transform: translateX(115%);
+  opacity: 0;
+}
+
 .lockTarget {
   width: 40px;
   height: 40px;

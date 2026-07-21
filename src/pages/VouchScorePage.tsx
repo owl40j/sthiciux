@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { AccessTiles } from '../components/ui/AccessTiles'
 import { Button } from '../components/ui/Button'
 import { ProgressBar } from '../components/ui/ProgressBar'
-import { usePrototype } from '../context/PrototypeContext'
+import { usePrototype } from '../context/prototype-context'
 import {
   getScoreLabel,
   getScoreMessage,

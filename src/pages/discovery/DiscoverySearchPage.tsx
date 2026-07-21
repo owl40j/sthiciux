@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button } from '../components/ui/Button'
+import { Button } from '../../components/ui/Button'
 import styles from './DiscoverySearchPage.module.css'
 
 const FILTERS = ['Inventory', 'Distance', 'Supplier']
@@ -8,6 +8,15 @@ const FILTERS = ['Inventory', 'Distance', 'Supplier']
 export function DiscoverySearchPage() {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
+  const [activeFilters, setActiveFilters] = useState<string[]>([])
+
+  const toggleFilter = (filter: string) => {
+    setActiveFilters((current) =>
+      current.includes(filter)
+        ? current.filter((candidate) => candidate !== filter)
+        : [...current, filter],
+    )
+  }
 
   const handleSearch = () => {
     navigate('/discovery/results', { state: { query: query || 'suppliers' } })
@@ -32,7 +41,13 @@ export function DiscoverySearchPage() {
 
       <div className={styles.filters} role="group" aria-label="Search filters">
         {FILTERS.map((filter) => (
-          <button key={filter} type="button" className={styles.chip}>
+          <button
+            key={filter}
+            type="button"
+            className={`${styles.chip} ${activeFilters.includes(filter) ? styles['chip--active'] : ''}`}
+            aria-pressed={activeFilters.includes(filter)}
+            onClick={() => toggleFilter(filter)}
+          >
             {filter}
           </button>
         ))}

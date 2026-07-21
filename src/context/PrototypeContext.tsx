@@ -1,7 +1,5 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useMemo,
   useState,
   type ReactNode,
@@ -11,21 +9,10 @@ import {
   SCORE_PRESETS,
   type ScorePreset,
 } from '../data/constants'
-
-interface PrototypeContextValue {
-  vouchScore: number
-  scorePreset: ScorePreset
-  setScorePreset: (preset: ScorePreset) => void
-  gateRequiredScore: number
-  meshExchangeCompleted: boolean
-  setMeshExchangeCompleted: (value: boolean) => void
-  vouchSubmitted: boolean
-  setVouchSubmitted: (value: boolean) => void
-}
-
-const PrototypeContext = createContext<PrototypeContextValue | null>(null)
+import { PrototypeContext, type SimulatedOutcome } from './prototype-context'
 
 const STORAGE_KEY = 'voucher-prototype-preset'
+const OUTCOME_STORAGE_KEY = 'voucher-prototype-outcome'
 
 function readPreset(): ScorePreset {
   const stored = localStorage.getItem(STORAGE_KEY)
@@ -39,10 +26,18 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
   const [scorePreset, setScorePresetState] = useState<ScorePreset>(readPreset)
   const [meshExchangeCompleted, setMeshExchangeCompleted] = useState(false)
   const [vouchSubmitted, setVouchSubmitted] = useState(false)
+  const [simulatedOutcome, setSimulatedOutcomeState] = useState<SimulatedOutcome>(() =>
+    localStorage.getItem(OUTCOME_STORAGE_KEY) === 'decline' ? 'decline' : 'accept',
+  )
 
   const setScorePreset = useCallback((preset: ScorePreset) => {
     setScorePresetState(preset)
     localStorage.setItem(STORAGE_KEY, preset)
+  }, [])
+
+  const setSimulatedOutcome = useCallback((outcome: SimulatedOutcome) => {
+    setSimulatedOutcomeState(outcome)
+    localStorage.setItem(OUTCOME_STORAGE_KEY, outcome)
   }, [])
 
   const value = useMemo(
@@ -55,19 +50,20 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       setMeshExchangeCompleted,
       vouchSubmitted,
       setVouchSubmitted,
+      simulatedOutcome,
+      setSimulatedOutcome,
     }),
-    [scorePreset, setScorePreset, meshExchangeCompleted, vouchSubmitted],
+    [
+      scorePreset,
+      setScorePreset,
+      meshExchangeCompleted,
+      vouchSubmitted,
+      simulatedOutcome,
+      setSimulatedOutcome,
+    ],
   )
 
   return (
     <PrototypeContext.Provider value={value}>{children}</PrototypeContext.Provider>
   )
-}
-
-export function usePrototype() {
-  const context = useContext(PrototypeContext)
-  if (!context) {
-    throw new Error('usePrototype must be used within PrototypeProvider')
-  }
-  return context
 }

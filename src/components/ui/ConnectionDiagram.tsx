@@ -7,6 +7,7 @@ interface ConnectionDiagramProps {
   youName?: string
   otherName?: string
   message?: string
+  revealOther?: boolean
 }
 
 export function ConnectionDiagram({
@@ -14,11 +15,12 @@ export function ConnectionDiagram({
   youName = 'You',
   otherName = 'Anonymous',
   message,
+  revealOther,
 }: ConnectionDiagramProps) {
   const middleIcon =
     state === 'declined' ? '✕' : state === 'accepted' || state === 'confirm-both' ? '✓' : '?'
 
-  const showOtherName = state === 'accepted' || state === 'confirm-both' || state === 'confirm-you'
+  const showOtherName = revealOther ?? (state === 'accepted' || state === 'confirm-both')
 
   const defaultMessages: Record<ConnectionState, string> = {
     pending: 'Your identity stays hidden until mutual acceptance.',

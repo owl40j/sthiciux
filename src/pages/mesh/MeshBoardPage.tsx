@@ -45,7 +45,7 @@ export function MeshBoardPage() {
       </ul>
 
       <div style={{ marginTop: 'auto' }}>
-        <Button variant="dashed" fullWidth onClick={() => alert('Post a need — prototype placeholder.')}>
+        <Button variant="dashed" fullWidth onClick={() => navigate('/mesh/post-need')}>
           Post a need
         </Button>
       </div>

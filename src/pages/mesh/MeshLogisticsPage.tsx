@@ -23,6 +23,7 @@ export function MeshLogisticsPage() {
           placeholder="Pickup location"
           value={pickup}
           onChange={(e) => setPickup(e.target.value)}
+          required
         />
         <label className={styles.label} htmlFor="time">
           Time / Day
@@ -33,11 +34,16 @@ export function MeshLogisticsPage() {
           placeholder="e.g. Tuesday 2:00 PM"
           value={time}
           onChange={(e) => setTime(e.target.value)}
+          required
         />
       </div>
 
       <div style={{ marginTop: 'auto' }}>
-        <Button fullWidth onClick={() => navigate(`/mesh/complete/${itemId}`)}>
+        <Button
+          fullWidth
+          disabled={!pickup.trim() || !time.trim()}
+          onClick={() => navigate(`/mesh/complete/${itemId}`)}
+        >
           Confirm Details
         </Button>
       </div>

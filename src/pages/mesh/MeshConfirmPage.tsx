@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
 import { ConnectionDiagram } from '../../components/ui/ConnectionDiagram'
 import { MESH_ITEMS } from '../../data/constants'
+import { usePrototype } from '../../context/prototype-context'
 
 type Phase = 'confirm' | 'waiting' | 'accepted' | 'declined'
 
@@ -12,16 +13,18 @@ export function MeshConfirmPage() {
   const navigate = useNavigate()
   const item = MESH_ITEMS.find((i) => i.id === itemId) ?? MESH_ITEMS[0]
   const simulateDecline = searchParams.get('outcome') === 'decline'
+  const { simulatedOutcome } = usePrototype()
+  const shouldDecline = simulateDecline || simulatedOutcome === 'decline'
 
   const [phase, setPhase] = useState<Phase>('confirm')
 
   useEffect(() => {
     if (phase !== 'waiting') return
     const timer = setTimeout(() => {
-      setPhase(simulateDecline ? 'declined' : 'accepted')
+      setPhase(shouldDecline ? 'declined' : 'accepted')
     }, 1800)
     return () => clearTimeout(timer)
-  }, [phase, simulateDecline])
+  }, [phase, shouldDecline])
 
   if (phase === 'declined') {
     return (

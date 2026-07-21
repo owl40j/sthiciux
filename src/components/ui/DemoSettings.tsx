@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { usePrototype } from '../../context/PrototypeContext'
+import { usePrototype, type SimulatedOutcome } from '../../context/prototype-context'
 import type { ScorePreset } from '../../data/constants'
 import styles from './DemoSettings.module.css'
 
@@ -9,9 +9,14 @@ const OPTIONS: { value: ScorePreset; label: string }[] = [
   { value: 'full', label: 'Full Access — 88/100' },
 ]
 
+const OUTCOMES: { value: SimulatedOutcome; label: string }[] = [
+  { value: 'accept', label: 'Requests accepted' },
+  { value: 'decline', label: 'Requests declined' },
+]
+
 export function DemoSettings() {
   const [open, setOpen] = useState(false)
-  const { scorePreset, setScorePreset } = usePrototype()
+  const { scorePreset, setScorePreset, simulatedOutcome, setSimulatedOutcome } = usePrototype()
 
   return (
     <div className={styles['demo-settings']}>
@@ -43,6 +48,21 @@ export function DemoSettings() {
                   onChange={() => setScorePreset(opt.value)}
                 />
                 {opt.label}
+              </label>
+            ))}
+          </div>
+          <p className={styles['demo-settings__subtitle']}>Simulated response</p>
+          <div className={styles['demo-settings__options']}>
+            {OUTCOMES.map((outcome) => (
+              <label key={outcome.value} className={styles['demo-settings__option']}>
+                <input
+                  type="radio"
+                  name="request-outcome"
+                  value={outcome.value}
+                  checked={simulatedOutcome === outcome.value}
+                  onChange={() => setSimulatedOutcome(outcome.value)}
+                />
+                {outcome.label}
               </label>
             ))}
           </div>

@@ -43,6 +43,15 @@
   gap: 6px;
 }
 
+.demo-settings__subtitle {
+  margin: 12px 0 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-border-light);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 .demo-settings__option {
   display: flex;
   align-items: center;

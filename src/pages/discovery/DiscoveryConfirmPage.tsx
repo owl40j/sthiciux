@@ -5,6 +5,7 @@ import { ConnectionDiagram } from '../../components/ui/ConnectionDiagram'
 import { RedactionBar } from '../../components/ui/RedactionBar'
 import { OTHER_PARTY_CONFIRM_DELAY_MS } from '../../data/constants'
 import { MOCK_SUPPLIERS } from '../../data/constants'
+import { usePrototype } from '../../context/prototype-context'
 
 type Phase = 'confirm' | 'waiting' | 'accepted' | 'declined'
 
@@ -14,16 +15,18 @@ export function DiscoveryConfirmPage() {
   const navigate = useNavigate()
   const supplier = MOCK_SUPPLIERS.find((s) => s.id === supplierId) ?? MOCK_SUPPLIERS[0]
   const simulateDecline = searchParams.get('outcome') === 'decline'
+  const { simulatedOutcome } = usePrototype()
+  const shouldDecline = simulateDecline || simulatedOutcome === 'decline'
 
   const [phase, setPhase] = useState<Phase>('confirm')
 
   useEffect(() => {
     if (phase !== 'waiting') return
     const timer = setTimeout(() => {
-      setPhase(simulateDecline ? 'declined' : 'accepted')
+      setPhase(shouldDecline ? 'declined' : 'accepted')
     }, OTHER_PARTY_CONFIRM_DELAY_MS)
     return () => clearTimeout(timer)
-  }, [phase, simulateDecline])
+  }, [phase, shouldDecline])
 
   if (phase === 'declined') {
     return (

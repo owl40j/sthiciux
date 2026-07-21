@@ -1,32 +1,30 @@
-# React + TypeScript + Vite
+# Voucher Prototype
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Voucher is a mobile-first speculative prototype for a barangay-level MSME trust and supply network. The integrated application demonstrates four connected product areas:
 
-Currently, two official plugins are available:
+- Supply Access Gate
+- Vouch Score
+- Supply Availability and Scarcity
+- Mesh Exchange
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Run locally
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Open the local URL shown by Vite. Use the orange **Demo** control to switch between Vouch Score states and accepted or declined simulated responses.
+
+## Verification
+
+```bash
+npm run lint
+npm run build
+```
+
+The project uses React, TypeScript, Vite, React Router, local state, and browser storage. No backend or sign-in is required.
+
+## Deployment
+
+The repository includes SPA fallback configuration for Vercel and Netlify-style hosting so refreshing nested prototype routes returns the application shell.

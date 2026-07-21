@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { ProgressBar } from '../components/ui/ProgressBar'
-import { usePrototype } from '../context/PrototypeContext'
+import { usePrototype } from '../context/prototype-context'
 import { getLevelLabel, getScoreLabel } from '../data/constants'
 import styles from './ProfilePage.module.css'
 

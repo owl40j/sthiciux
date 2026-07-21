@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
 import { ConnectionDiagram } from '../../components/ui/ConnectionDiagram'
-import { usePrototype } from '../../context/PrototypeContext'
-import { OTHER_PARTY_CONFIRM_DELAY_MS } from '../../data/constants'
+import { usePrototype } from '../../context/prototype-context'
+import { MESH_ITEMS, OTHER_PARTY_CONFIRM_DELAY_MS } from '../../data/constants'
 
 type CompletePhase = 'you-confirmed' | 'both-confirmed' | 'vouch-prompt'
 
@@ -12,6 +12,7 @@ export function MeshCompletePage() {
   const navigate = useNavigate()
   const { setMeshExchangeCompleted } = usePrototype()
   const [phase, setPhase] = useState<CompletePhase>('you-confirmed')
+  const item = MESH_ITEMS.find((candidate) => candidate.id === itemId) ?? MESH_ITEMS[0]
 
   useEffect(() => {
     if (phase !== 'you-confirmed') return
@@ -33,6 +34,8 @@ export function MeshCompletePage() {
 
       <ConnectionDiagram
         state={phase === 'both-confirmed' ? 'confirm-both' : 'confirm-you'}
+        otherName={item.business}
+        revealOther
       />
 
       <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>

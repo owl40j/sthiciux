@@ -1,9 +1,28 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import styles from './TrustCardPage.module.css'
 
 export function TrustCardPage() {
   const navigate = useNavigate()
+  const [shareStatus, setShareStatus] = useState('')
+
+  const handleShare = async () => {
+    const shareText = 'MSME Owner — Certified Network Tier'
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'Voucher Trust Card', text: shareText })
+        setShareStatus('Trust Card shared.')
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareText)
+        setShareStatus('Trust Card details copied to clipboard.')
+      } else {
+        setShareStatus('Sharing is unavailable in this browser.')
+      }
+    } catch {
+      setShareStatus('Sharing cancelled.')
+    }
+  }
 
   return (
     <div className="screen">
@@ -17,16 +36,8 @@ export function TrustCardPage() {
       </div>
 
       <div className={styles.footer}>
-        <Button
-          fullWidth
-          onClick={() => {
-            if (navigator.share) {
-              navigator.share({ title: 'Voucher Trust Card', text: 'MSME Owner — Certified Network Tier' }).catch(() => {})
-            } else {
-              alert('Trust Card link copied to clipboard (prototype).')
-            }
-          }}
-        >
+        {shareStatus && <p role="status" className={styles.status}>{shareStatus}</p>}
+        <Button fullWidth onClick={handleShare}>
           Share Card
         </Button>
         <Button variant="secondary" fullWidth onClick={() => navigate('/vouch-score')}>

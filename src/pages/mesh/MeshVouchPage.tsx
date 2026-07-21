@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
-import { usePrototype } from '../../context/PrototypeContext'
+import { usePrototype } from '../../context/prototype-context'
 import { MESH_ITEMS } from '../../data/constants'
 import styles from './MeshVouchPage.module.css'
 

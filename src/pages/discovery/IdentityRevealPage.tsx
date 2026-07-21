@@ -36,7 +36,7 @@ export function IdentityRevealPage() {
       </div>
 
       <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <Button fullWidth onClick={() => alert('Messaging prototype — connection established.')}>
+        <Button fullWidth onClick={() => navigate(`/discovery/message/${supplier.id}`)}>
           Message Supplier
         </Button>
         <Button variant="secondary" fullWidth onClick={() => navigate('/')}>

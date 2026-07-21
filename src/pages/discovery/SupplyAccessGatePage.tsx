@@ -8,7 +8,7 @@ import {
 } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
-import { usePrototype } from '../../context/PrototypeContext'
+import { usePrototype } from '../../context/prototype-context'
 import styles from './SupplyAccessGatePage.module.css'
 
 const TRACK_HEIGHT = 280
@@ -27,6 +27,7 @@ export function SupplyAccessGatePage() {
   const [snapping, setSnapping] = useState(false)
   const [unlocked, setUnlocked] = useState(false)
   const [showInsufficient, setShowInsufficient] = useState(false)
+  const progressRef = useRef(0)
   const startYRef = useRef(0)
   const startProgressRef = useRef(0)
 
@@ -36,7 +37,7 @@ export function SupplyAccessGatePage() {
     (raw: number) => {
       if (canUnlock) return raw
       // Increasing resistance as handle approaches the limit
-      const normalized = raw / MAX_LOCKED_PROGRESS
+      const normalized = Math.max(0, Math.min(1, raw / MAX_LOCKED_PROGRESS))
       const resisted = MAX_LOCKED_PROGRESS * (1 - Math.pow(1 - normalized, 2.5))
       return Math.min(resisted, MAX_LOCKED_PROGRESS)
     },
@@ -52,7 +53,9 @@ export function SupplyAccessGatePage() {
       const y = clientY - rect.top - HANDLE_SIZE / 2
       const raw = 1 - Math.max(0, Math.min(1, y / usable))
       const resisted = applyResistance(raw)
-      setProgress(Math.min(resisted, maxProgress))
+      const nextProgress = Math.min(resisted, maxProgress)
+      progressRef.current = nextProgress
+      setProgress(nextProgress)
     },
     [applyResistance, maxProgress],
   )
@@ -77,7 +80,8 @@ export function SupplyAccessGatePage() {
     setDragging(false)
     setSnapping(true)
 
-    if (canUnlock && progress >= 0.92) {
+    if (canUnlock && progressRef.current >= 0.92) {
+      progressRef.current = 1
       setProgress(1)
       setUnlocked(true)
       setTimeout(() => {
@@ -86,6 +90,7 @@ export function SupplyAccessGatePage() {
       return
     }
 
+    progressRef.current = 0
     setProgress(0)
     if (!canUnlock) {
       setShowInsufficient(true)
@@ -106,6 +111,7 @@ export function SupplyAccessGatePage() {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       if (canUnlock) {
+        progressRef.current = 1
         setProgress(1)
         setUnlocked(true)
         setTimeout(() => navigate(`/discovery/confirm/${supplierId}`), 600)
@@ -141,6 +147,13 @@ export function SupplyAccessGatePage() {
           tabIndex={0}
           onKeyDown={handleKeyDown}
         >
+          <div
+            className={`${styles.gatePanels} ${unlocked ? styles['gatePanels--open'] : ''}`}
+            aria-hidden="true"
+          >
+            <span />
+            <span />
+          </div>
           <div className={`${styles.lockTarget} ${unlocked ? styles['lockTarget--open'] : ''}`}>
             <span aria-hidden="true">{unlocked ? '🔓' : '🔒'}</span>
           </div>

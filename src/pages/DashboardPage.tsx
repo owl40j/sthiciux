@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { ListRow } from '../components/ui/ListRow'
 import { ScoreCard } from '../components/ui/ScoreCard'
 import { ScarcityGrid } from '../components/ui/ScarcityGrid'
-import { usePrototype } from '../context/PrototypeContext'
+import { usePrototype } from '../context/prototype-context'
 import { getLevelLabel, getScoreLabel } from '../data/constants'
 
 export function DashboardPage() {
@@ -20,7 +20,7 @@ export function DashboardPage() {
 
       <ScarcityGrid compact onEpicenterClick={() => navigate('/scarcity')} />
 
-      <ListRow label="Trust Activity" onClick={() => navigate('/vouch-actions')} />
+      <ListRow label="Trust Activity" onClick={() => navigate('/trust-activity')} />
     </div>
   )
 }
