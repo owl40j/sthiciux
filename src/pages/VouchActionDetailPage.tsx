@@ -1,11 +1,14 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../components/ui/Button'
 import { VOUCH_ACTIONS } from '../data/constants'
+import { usePrototype } from '../context/prototype-context'
 
 export function VouchActionDetailPage() {
   const { actionId } = useParams()
   const navigate = useNavigate()
   const action = VOUCH_ACTIONS.find((a) => a.id === actionId)
+  const { startedActions, startAction } = usePrototype()
+  const isStarted = actionId ? startedActions.includes(actionId) : false
 
   if (!action) {
     return (
@@ -27,8 +30,15 @@ export function VouchActionDetailPage() {
         </p>
       </div>
       <div style={{ marginTop: 'auto' }}>
-        <Button fullWidth onClick={() => navigate('/vouch-actions')}>
-          Mark as started
+        <Button
+          fullWidth
+          disabled={isStarted}
+          onClick={() => {
+            if (actionId) startAction(actionId)
+            navigate('/vouch-actions')
+          }}
+        >
+          {isStarted ? 'Already started' : 'Mark as started'}
         </Button>
         <Button variant="secondary" fullWidth onClick={() => navigate('/vouch-actions')} style={{ marginTop: 8 }}>
           Back to list

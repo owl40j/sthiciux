@@ -13,6 +13,16 @@ import { PrototypeContext, type SimulatedOutcome } from './prototype-context'
 
 const STORAGE_KEY = 'voucher-prototype-preset'
 const OUTCOME_STORAGE_KEY = 'voucher-prototype-outcome'
+const ACTIONS_STORAGE_KEY = 'voucher-prototype-started-actions'
+
+function readStartedActions(): string[] {
+  try {
+    const stored = JSON.parse(localStorage.getItem(ACTIONS_STORAGE_KEY) ?? '[]')
+    return Array.isArray(stored) ? stored.filter((value): value is string => typeof value === 'string') : []
+  } catch {
+    return []
+  }
+}
 
 function readPreset(): ScorePreset {
   const stored = localStorage.getItem(STORAGE_KEY)
@@ -29,6 +39,7 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
   const [simulatedOutcome, setSimulatedOutcomeState] = useState<SimulatedOutcome>(() =>
     localStorage.getItem(OUTCOME_STORAGE_KEY) === 'decline' ? 'decline' : 'accept',
   )
+  const [startedActions, setStartedActions] = useState<string[]>(readStartedActions)
 
   const setScorePreset = useCallback((preset: ScorePreset) => {
     setScorePresetState(preset)
@@ -38,6 +49,15 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
   const setSimulatedOutcome = useCallback((outcome: SimulatedOutcome) => {
     setSimulatedOutcomeState(outcome)
     localStorage.setItem(OUTCOME_STORAGE_KEY, outcome)
+  }, [])
+
+  const startAction = useCallback((actionId: string) => {
+    setStartedActions((current) => {
+      if (current.includes(actionId)) return current
+      const next = [...current, actionId]
+      localStorage.setItem(ACTIONS_STORAGE_KEY, JSON.stringify(next))
+      return next
+    })
   }, [])
 
   const value = useMemo(
@@ -52,6 +72,8 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       setVouchSubmitted,
       simulatedOutcome,
       setSimulatedOutcome,
+      startedActions,
+      startAction,
     }),
     [
       scorePreset,
@@ -60,6 +82,8 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       vouchSubmitted,
       simulatedOutcome,
       setSimulatedOutcome,
+      startedActions,
+      startAction,
     ],
   )
 

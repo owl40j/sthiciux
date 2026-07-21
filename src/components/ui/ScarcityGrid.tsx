@@ -42,6 +42,10 @@ export function ScarcityGrid({ compact = false, interactive = false, onEpicenter
       preserveAspectRatio="none"
       aria-hidden="true"
     >
+      <rect x="4" y="4" width="92" height="92" rx="4" fill="#f8f8f8" />
+      <path d="M5 30 C24 22, 35 38, 51 30 S78 14, 96 23" fill="none" stroke="#b7b7b7" strokeWidth="2.4" />
+      <path d="M17 4 C22 24, 15 43, 25 58 S48 79, 43 96" fill="none" stroke="#c7c7c7" strokeWidth="1.8" />
+      <path d="M5 63 C27 67, 38 54, 56 61 S79 83, 96 74" fill="none" stroke="#c7c7c7" strokeWidth="1.8" />
       {lines.map((line) => (
         <line
           key={line.key}
@@ -53,27 +57,21 @@ export function ScarcityGrid({ compact = false, interactive = false, onEpicenter
           strokeWidth={compact ? 0.6 : 0.8}
         />
       ))}
-      <g
-        className={interactive ? styles['scarcity-preview__target'] : undefined}
-        onClick={interactive ? onEpicenterClick : undefined}
-        onKeyDown={
-          interactive
-            ? (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  onEpicenterClick?.()
-                }
-              }
-            : undefined
-        }
-        role={interactive ? 'button' : undefined}
-        tabIndex={interactive ? 0 : undefined}
-        aria-label={interactive ? 'Activate scarcity epicenter' : undefined}
-      >
+      <g>
+        <circle cx="31" cy="38" r="3" fill="#888" />
+        <circle cx="42" cy="67" r="3" fill="#bbb" />
+        <circle cx="81" cy="42" r="3" fill="#ddd" stroke="#777" strokeWidth="0.8" />
         <circle cx={epicenterX} cy={epicenterY} r={interactive ? 6 : 4} fill="none" stroke="#111" strokeWidth="1.2" />
         <line x1={epicenterX - 8} y1={epicenterY} x2={epicenterX + 8} y2={epicenterY} stroke="#111" strokeWidth="1" />
         <line x1={epicenterX} y1={epicenterY - 8} x2={epicenterX} y2={epicenterY + 8} stroke="#111" strokeWidth="1" />
       </g>
+      {!compact && (
+        <>
+          <text x="7" y="13" fontSize="3.3" fill="#555">Poblacion</text>
+          <text x="68" y="16" fontSize="3.3" fill="#555">Market zone</text>
+          <text x="7" y="91" fontSize="3.3" fill="#555">South cluster</text>
+        </>
+      )}
     </svg>
   )
 
@@ -95,8 +93,18 @@ export function ScarcityGrid({ compact = false, interactive = false, onEpicenter
   }
 
   return (
-    <div className={`card card--dashed ${styles['scarcity-preview']}`} style={{ aspectRatio: '3 / 4', padding: 0 }}>
+    <div className={`card card--dashed ${styles['scarcity-preview']} ${styles['scarcity-preview--map']}`}>
       {svg}
+      {interactive && (
+        <button
+          type="button"
+          className={styles['scarcity-preview__target-button']}
+          onClick={onEpicenterClick}
+          aria-label="Inspect critical scarcity epicenter"
+        >
+          <span>Critical signal</span>
+        </button>
+      )}
     </div>
   )
 }

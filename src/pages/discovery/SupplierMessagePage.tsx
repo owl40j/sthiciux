@@ -1,51 +1,132 @@
-import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { Button } from '../../components/ui/Button'
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { MOCK_SUPPLIERS } from '../../data/constants'
-import styles from '../FormPage.module.css'
+import styles from './SupplierMessagePage.module.css'
+
+interface CommMessage {
+  id: number
+  author: 'system' | 'supplier' | 'you'
+  text: string
+  time: string
+}
+
+const INITIAL_MESSAGES: CommMessage[] = [
+  {
+    id: 1,
+    author: 'system',
+    text: 'Mutual consent verified. Identity keys exchanged for this session.',
+    time: '14:02',
+  },
+  {
+    id: 2,
+    author: 'supplier',
+    text: 'Hello. We received your access request. How much cooking oil does your business need?',
+    time: '14:03',
+  },
+]
 
 export function SupplierMessagePage() {
   const { supplierId } = useParams()
-  const navigate = useNavigate()
   const supplier = MOCK_SUPPLIERS.find((candidate) => candidate.id === supplierId) ?? MOCK_SUPPLIERS[0]
-  const [message, setMessage] = useState('')
-  const [sent, setSent] = useState(false)
+  const [draft, setDraft] = useState('')
+  const [messages, setMessages] = useState<CommMessage[]>(INITIAL_MESSAGES)
+  const [awaitingReply, setAwaitingReply] = useState(false)
 
-  if (sent) {
-    return (
-      <div className="screen">
-        <h1 className="screen-title">Message Sent</h1>
-        <div className="card" role="status">
-          Your message was sent to {supplier.name} in this prototype session.
-        </div>
-        <div style={{ marginTop: 'auto' }}>
-          <Button fullWidth onClick={() => navigate('/')}>
-            Return to Dashboard
-          </Button>
-        </div>
-      </div>
-    )
+  useEffect(() => {
+    if (!awaitingReply) return
+    const timer = setTimeout(() => {
+      setMessages((current) => [
+        ...current,
+        {
+          id: Date.now(),
+          author: 'supplier',
+          text: 'Available. We can reserve the requested amount until tomorrow at 3:00 PM. Shall we confirm pickup?',
+          time: 'Now',
+        },
+      ])
+      setAwaitingReply(false)
+    }, 900)
+    return () => clearTimeout(timer)
+  }, [awaitingReply])
+
+  const sendMessage = () => {
+    const text = draft.trim()
+    if (!text || awaitingReply) return
+    setMessages((current) => [
+      ...current,
+      { id: Date.now(), author: 'you', text, time: 'Now' },
+    ])
+    setDraft('')
+    setAwaitingReply(true)
   }
 
   return (
-    <div className="screen">
-      <h1 className="screen-title">Message Supplier</h1>
-      <p className={styles.note}>Connected with {supplier.name}</p>
-      <label className={styles.label} htmlFor="supplier-message">
-        Message
-      </label>
-      <textarea
-        id="supplier-message"
-        className={styles.textarea}
-        value={message}
-        onChange={(event) => setMessage(event.target.value)}
-        placeholder="Ask about availability, quantity, or pickup details…"
-        rows={8}
-      />
-      <div style={{ marginTop: 'auto' }}>
-        <Button fullWidth disabled={!message.trim()} onClick={() => setSent(true)}>
-          Send Message
-        </Button>
+    <div className={`screen ${styles.commLink}`}>
+      <header className={styles.commHeader}>
+        <div className={styles.identity}>
+          <div className={styles.avatar} aria-hidden="true">{supplier.name.charAt(0)}</div>
+          <div>
+            <h1>{supplier.name}</h1>
+            <p>Verified barangay supplier</p>
+          </div>
+        </div>
+        <span className={styles.encrypted}><i aria-hidden="true" /> Encrypted</span>
+      </header>
+
+      <div className={styles.securityNotice} role="status">
+        <span aria-hidden="true">◇</span>
+        <div>
+          <strong>Encrypted Comm-Link</strong>
+          <p>Messages use temporary session keys and disappear when this prototype session ends.</p>
+        </div>
+      </div>
+
+      <div className={styles.thread} aria-live="polite" aria-label="Conversation">
+        {messages.map((message) => (
+          message.author === 'system' ? (
+            <div key={message.id} className={styles.systemMessage}>{message.text}</div>
+          ) : (
+            <article
+              key={message.id}
+              className={`${styles.message} ${message.author === 'you' ? styles.outgoing : styles.incoming}`}
+            >
+              <p>{message.text}</p>
+              <time>{message.author === 'you' ? 'You' : supplier.name} · {message.time}</time>
+            </article>
+          )
+        ))}
+        {awaitingReply && <div className={styles.typing}>{supplier.name} is transmitting…</div>}
+      </div>
+
+      <div className={styles.quickReplies} aria-label="Suggested replies">
+        {['20 liters', 'Confirm pickup', 'Share logistics'].map((reply) => (
+          <button key={reply} type="button" onClick={() => setDraft(reply)}>{reply}</button>
+        ))}
+      </div>
+
+      <div className={styles.composer}>
+        <label className="sr-only" htmlFor="comm-message">Encrypted message</label>
+        <textarea
+          id="comm-message"
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault()
+              sendMessage()
+            }
+          }}
+          placeholder="Transmit an encrypted message…"
+          rows={2}
+        />
+        <button
+          type="button"
+          onClick={sendMessage}
+          disabled={!draft.trim() || awaitingReply}
+          aria-label="Send encrypted message"
+        >
+          Send
+        </button>
       </div>
     </div>
   )

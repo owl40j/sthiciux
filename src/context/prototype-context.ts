@@ -14,6 +14,8 @@ export interface PrototypeContextValue {
   setVouchSubmitted: (value: boolean) => void
   simulatedOutcome: SimulatedOutcome
   setSimulatedOutcome: (value: SimulatedOutcome) => void
+  startedActions: string[]
+  startAction: (actionId: string) => void
 }
 
 export const PrototypeContext = createContext<PrototypeContextValue | null>(null)

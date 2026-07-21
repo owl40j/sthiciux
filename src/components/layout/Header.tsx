@@ -37,7 +37,14 @@ export function Header({ showBack, title, onBack }: HeaderProps) {
 
   return (
     <header className={styles.header}>
-      <div className={styles.header__brand}>Voucher</div>
+      <button
+        type="button"
+        className={styles.header__brand}
+        onClick={() => navigate('/')}
+        aria-label="Voucher — return to Dashboard"
+      >
+        Voucher
+      </button>
       <div className={styles.header__profile}>
         <div className={styles.header__avatar} aria-hidden="true">
           ○

@@ -6,9 +6,17 @@ import styles from './ScarcityFlowPage.module.css'
 
 type ScarcityPhase = 'map' | 'stabilizing' | 'verified'
 
+const RESOURCES = [
+  { id: 'oil', name: 'Cooking oil', status: 'Critical', reports: 12, radius: '1.4 km', confidence: 94 },
+  { id: 'rice', name: 'Rice', status: 'Limited', reports: 7, radius: '2.1 km', confidence: 81 },
+  { id: 'packaging', name: 'Packaging', status: 'Stable', reports: 4, radius: '3.0 km', confidence: 76 },
+] as const
+
 export function ScarcityFlowPage() {
   const navigate = useNavigate()
   const [phase, setPhase] = useState<ScarcityPhase>('map')
+  const [selectedId, setSelectedId] = useState<(typeof RESOURCES)[number]['id']>('oil')
+  const selected = RESOURCES.find((resource) => resource.id === selectedId) ?? RESOURCES[0]
 
   useEffect(() => {
     if (phase !== 'stabilizing') return
@@ -30,8 +38,14 @@ export function ScarcityFlowPage() {
       <div className="screen">
         <h1 className="screen-title">Verified Scarcity</h1>
         <div className={`card card--dashed ${styles.result}`}>
-          <p className={styles.resultTitle}>Cooking oil scarcity confirmed</p>
+          <span className={styles.verifiedBadge}>Verified network signal</span>
+          <p className={styles.resultTitle}>{selected.name} scarcity confirmed</p>
           <p className={styles.resultSub}>Signal verified within your barangay</p>
+          <dl className={styles.evidence}>
+            <div><dt>Confidence</dt><dd>{selected.confidence}%</dd></div>
+            <div><dt>Peer reports</dt><dd>{selected.reports}</dd></div>
+            <div><dt>Affected radius</dt><dd>{selected.radius}</dd></div>
+          </dl>
         </div>
         <div className={styles.actions}>
           <button
@@ -56,8 +70,37 @@ export function ScarcityFlowPage() {
   return (
     <div className="screen">
       <h1 className="screen-title">Scarcity Map</h1>
+      <div className={styles.mapHeader}>
+        <div>
+          <strong>Barangay supply scan</strong>
+          <span>Updated from verified peer signals</span>
+        </div>
+        <span className={styles.live}><i /> Live</span>
+      </div>
+      <div className={styles.filters} role="group" aria-label="Resource shown on map">
+        {RESOURCES.map((resource) => (
+          <button
+            key={resource.id}
+            type="button"
+            className={selectedId === resource.id ? styles.activeFilter : ''}
+            aria-pressed={selectedId === resource.id}
+            onClick={() => setSelectedId(resource.id)}
+          >
+            {resource.name}
+          </button>
+        ))}
+      </div>
       <ScarcityGrid interactive onEpicenterClick={() => setPhase('stabilizing')} />
-      <p className={styles.hint}>Grid tightens toward scarcity epicenter</p>
+      <div className={styles.legend} aria-label="Map signal legend">
+        <span><i className={styles.criticalDot} /> Critical</span>
+        <span><i className={styles.limitedDot} /> Limited</span>
+        <span><i className={styles.stableDot} /> Stable</span>
+      </div>
+      <div className={styles.signalSummary}>
+        <strong>{selected.name}: {selected.status}</strong>
+        <span>{selected.reports} peer reports within {selected.radius}</span>
+      </div>
+      <p className={styles.hint}>The grid compresses toward the strongest scarcity signal. Select the marked epicenter to verify it.</p>
     </div>
   )
 }
