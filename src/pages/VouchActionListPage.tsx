@@ -5,19 +5,10 @@ import styles from './VouchActionListPage.module.css'
 
 export function VouchActionListPage() {
   const navigate = useNavigate()
-  const { startedActions, startAction } = usePrototype()
+  const { startedActions } = usePrototype()
 
   const handleAction = (id: string) => {
-    startAction(id)
-    if (id === 'mesh-exchange') {
-      navigate('/mesh')
-    } else if (id === 'scarcity-signal') {
-      navigate('/scarcity')
-    } else if (id === 'supplier-forest') {
-      navigate('/discovery')
-    } else {
-      navigate(`/vouch-actions/${id}`)
-    }
+    navigate(`/vouch-actions/${id}`)
   }
 
   return (
